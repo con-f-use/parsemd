@@ -1,0 +1,8 @@
+[submodule "include/parsedown"]
+	path = include/parsedown
+	url = git@github.com:erusev/parsedown.git
+	branch = master
+[submodule "include/parsedown-extra"]
+	path = include/parsedown-extra
+	url = git@github.com:erusev/parsedown-extra.git
+	branch = master
