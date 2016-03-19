@@ -195,8 +195,8 @@
 
 <div class="output">
 <?php
-    require_once "libs/parsedown/Parsedown.php";
-    require_once "libs/parsedown-extra/ParsedownExtra.php";
+    require_once "include/parsedown/Parsedown.php";
+    require_once "include/parsedown-extra/ParsedownExtra.php";
     $parsedown = new ParsedownExtra();
 
     $text = $parsedown->text($text);
@@ -217,7 +217,7 @@
         </a>
     </span>
     <span id="rightfoot">
-        Back to <a href="./">main page</a>
+        Back to <a href="<?php echo "http://".$_SERVER['SERVER_NAME']; ?>">main page</a>
     </span>
     <div style="clear: both;"></div>
 </div>

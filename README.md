@@ -7,12 +7,15 @@ See it in [action](http://unethische.org/misc/parsemd/parsemd.php?file=README.md
 
 ## Usage
 
-Open `parsemd.php` in your browser. The markdown-file is specified with the GET variable `file`, e.g.
+Open `parsemd.php` in your browser.
+The markdown-file is specified with the GET variable `file`, e.g.
 
     https://www.my-domain.com/parsemd.php?file=README.md&skin=sons-of-obsidian&linenums
 
 The `linenums` argument (at the end of the url) activates linenumbers for code blocks.
 The `skin` argument specifies the code hightlighting skin to use with code-prettify.
+
+Do not forget to pull the submodules, i.e. clone with `git clone --recursive git@github.com:con-f-use/parsemd.git`.
 
 Here is an example of code, that `parsemd` prettifies automatically:
 
@@ -36,6 +39,7 @@ It honors `<?prettify ?>` commands (see prettify's [Getting Started](https://git
 Markdown meta-data can be included at the very top of the markdown file.
 An example would looke like this:
 
+
     ####################################################
     Title:  Readme for parsemd
     Date:   Sat, Mar 19 - 01:53 PM
@@ -48,6 +52,7 @@ An example would looke like this:
         letters, numbers, a dash (-) or an underscore
         (_).
     ####################################################
+
 
 ### Updating
 
@@ -65,7 +70,7 @@ To install a webserver on your local machine (for testing purposes), use:
 
     sudo apt-get install -y lamp-server^
 
-Mind the `^`[^2] and choose a strong MySQL password, when asked.
+Mind the `^` (caret[^2]) and choose a strong MySQL password, when asked.
 Access your shiny new local webserver from [within your browser](http://localhost).
 If all went well, you should see the "Apache2 Ubuntu Default Page"
 Files on the server are normally only visible to the local network.
