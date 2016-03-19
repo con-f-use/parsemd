@@ -72,6 +72,7 @@
         ;
     ?>
 
+    <script src="https://cdn.rawgit.com/zenorocha/clipboard.js/v1.5.8/dist/clipboard.min.js"></script>
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
         tex2jax: {
@@ -83,6 +84,32 @@
     </script>
     <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?skin=<?php echo isset($_GET['skin']) ? $_GET['skin'] : "sunburst"; ?>"></script><!-- sunburst, doxy, desert, sons-of-obsidian -->
+
+    <script type="text/javascript">
+        // Hack for converting HTML special characters to regular text, i.e. '&nbsp;' --> ' '
+        function decodeHtml(html) {
+            var txt = document.createElement("textarea");
+            txt.innerHTML = html;
+            return txt.value;
+        }
+
+        // Save the code in a codeblock to a blob for user download.
+        function codesave(nbr) {
+            data = document.getElementById('code_'+nbr).innerHTML;
+            data = data.replace(/<[^>]*>/g, "");
+            data = decodeHtml(data);
+            data = [data];
+            properties = {type: 'plain/text'};
+            try {
+               file = new File(data, "codeblock.txt", properties);
+            } catch (e) {
+               file = new Blob(data, properties);
+            }
+            url = URL.createObjectURL(file);
+            window.open(url);
+        }
+    </script>
+
     <style type="text/css">
 
     a {
@@ -190,6 +217,20 @@
         list-style-type: decimal !important;
     }
 
+    .copyclipimg {
+        height: 1.2em;
+        -webkit-filter: invert(1);
+        filter: invert(1);
+        float: right;
+    }
+
+    .saveimg {
+        height: 1.2em;
+        -webkit-filter: invert(1);
+        filter: invert(1);
+        float: right;
+    }
+
 </style>
 </head><body>
 
@@ -201,7 +242,22 @@
 
     $text = $parsedown->text($text);
     $ln = isset($_GET['linenums']) ? ' linenums=true' : '';
-    $text = str_replace('<pre>', '<pre class="prettyprint'.$ln.'">', $text); // linenums
+    $id = 0;
+    $codestart = '~<pre><code>~';
+    while( preg_match($codestart, $text) ) {
+        $text = preg_replace(
+            $codestart,
+            '<pre class="prettyprint'.$ln.'">'.
+            '<img class="saveimg" alt="saveicon" onclick="codesave('.$id.');" '.
+            'src="http://www.fileformat.info/info/unicode/char/1f4be/floppy_disk.png">'.
+            '<img class="copyclipimg" alt="clipboardicon" '.
+            'data-clipboard-target="#code_'.$id.'" '.
+            'src="http://www.fileformat.info/info/unicode/char/1f4cb/clipboard.png">'.
+            '<code id="code_'.$id.'">'.
+            '', $text, 1
+        );
+        ++$id;
+    }
     $text = preg_replace('~<p>&lt;\?prettify ?(.*?)\?&gt;</p>~', '<?prettify \1?>', $text);
 
     echo $text;
@@ -223,5 +279,15 @@
 </div>
 
 </div>
+
+<script type="text/javascript">
+    var clipboard = new Clipboard('.copyclipimg');
+    clipboard.on('success', function(e) {
+        console.log(e);
+    });
+    clipboard.on('error', function(e) {
+        console.log(e);
+    });
+</script>
 
 </body></html>

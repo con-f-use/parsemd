@@ -1,9 +1,9 @@
 # Parsemd
 php script to display [Markdown Extra](https://michelf.ca/projects/php-markdown/extra/) files from the web.[^1]
 
-Prettifies code with [google prettify](https://github.com/google/code-prettify) and uses [parsedown](https://github.com/erusev/parsedown)-[extra](https://github.com/erusev/parsedown-extra) to convert markdown into html. It also parses inline [LaTeX](https://www.latex-project.org) not in code-blocks using [mathjax](https://www.mathjax.org).
+Prettifies code with [google prettify](https://github.com/google/code-prettify) and uses [parsedown](https://github.com/erusev/parsedown)-[extra](https://github.com/erusev/parsedown-extra) to convert markdown into html. It also parses inline [LaTeX](https://www.latex-project.org) not in code-blocks using [mathjax](https://www.mathjax.org). Below you can see it in action:
 
-See it in [action](http://unethische.org/misc/parsemd/parsemd.php?file=README.md).
+![parsemd in action](http://i.imgur.com/PEqguHj.png)
 
 ## Usage
 
