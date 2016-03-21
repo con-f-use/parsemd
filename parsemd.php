@@ -4,6 +4,7 @@
     date_default_timezone_set("UTC");
 
     $mdfl = urldecode($_GET["file"]);
+    $nocpb = isset($_GET['nocpb']) === true;
 
     $metare    = '~^[ ]{0,3}([A-Za-z0-9_-]+):\s*(.*?)$~';
     $metamore  = '~^[ ]{4,}(.*?)$~';
@@ -53,8 +54,8 @@
         }
     }
 
-    if( !isset($key) ) $text .= $delim;
-    while( !feof($fh)) $text .= fgets($fh);
+    if( !isset($key)  ) $text .= $delim;
+    while( !feof($fh) ) $text .= fgets($fh);
 
     fclose($fh);
 
@@ -72,7 +73,8 @@
         ;
     ?>
 
-    <script src="https://cdn.rawgit.com/zenorocha/clipboard.js/v1.5.8/dist/clipboard.min.js"></script>
+    <?php if(!$nocpb) { echo
+    '<script src="https://cdn.rawgit.com/zenorocha/clipboard.js/v1.5.8/dist/clipboard.min.js"></script>'."\n"; } ?>
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
         tex2jax: {
@@ -222,6 +224,7 @@
         -webkit-filter: invert(1);
         filter: invert(1);
         float: right;
+        cursor: pointer;
     }
 
     .saveimg {
@@ -229,12 +232,14 @@
         -webkit-filter: invert(1);
         filter: invert(1);
         float: right;
+        cursor: pointer;
     }
 
 </style>
 </head><body>
 
-<div class="output">
+<div class="output"><a href="<?php echo $mdfl; ?>"><img class="saveimg" alt="saveicon" src="http://www.fileformat.info/info/unicode/char/1f4be/floppy_disk.png"></a>
+
 <?php
     require_once "include/parsedown/Parsedown.php";
     require_once "include/parsedown-extra/ParsedownExtra.php";
@@ -245,17 +250,17 @@
     $id = 0;
     $codestart = '~<pre><code>~';
     while( preg_match($codestart, $text) ) {
-        $text = preg_replace(
-            $codestart,
-            '<pre class="prettyprint'.$ln.'">'.
+        $cpbstr = '<pre class="prettyprint'.$ln.'">';
+        if( !$nocpb ) {
+            $cpbstr .=
             '<img class="saveimg" alt="saveicon" onclick="codesave('.$id.');" '.
             'src="http://www.fileformat.info/info/unicode/char/1f4be/floppy_disk.png">'.
             '<img class="copyclipimg" alt="clipboardicon" '.
             'data-clipboard-target="#code_'.$id.'" '.
-            'src="http://www.fileformat.info/info/unicode/char/1f4cb/clipboard.png">'.
-            '<code id="code_'.$id.'">'.
-            '', $text, 1
-        );
+            'src="http://www.fileformat.info/info/unicode/char/1f4cb/clipboard.png">';
+        }
+        $cpbstr .= '<code id="code_'.$id.'">';
+        $text = preg_replace( $codestart, $cpbstr, $text, 1 );
         ++$id;
     }
     $text = preg_replace('~<p>&lt;\?prettify ?(.*?)\?&gt;</p>~', '<?prettify \1?>', $text);
@@ -279,15 +284,16 @@
 </div>
 
 </div>
-
-<script type="text/javascript">
-    var clipboard = new Clipboard('.copyclipimg');
-    clipboard.on('success', function(e) {
-        console.log(e);
-    });
-    clipboard.on('error', function(e) {
-        console.log(e);
-    });
-</script>
+<?php if(!$nocpb) { echo
+'<script type="text/javascript">'.
+"    var clipboard = new Clipboard('.copyclipimg');".
+"    clipboard.on('success', function(e) {".
+'        console.log(e);'.
+'    });'.
+"    clipboard.on('error', function(e) {".
+'        console.log(e);'.
+'    });'.
+'</script>';
+} ?>
 
 </body></html>

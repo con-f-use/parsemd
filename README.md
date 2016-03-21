@@ -1,19 +1,24 @@
 # Parsemd
-php script to display [Markdown Extra](https://michelf.ca/projects/php-markdown/extra/) files from the web.[^1]
 
-Prettifies code with [google prettify](https://github.com/google/code-prettify) and uses [parsedown](https://github.com/erusev/parsedown)-[extra](https://github.com/erusev/parsedown-extra) to convert markdown into html. It also parses inline [LaTeX](https://www.latex-project.org) not in code-blocks using [mathjax](https://www.mathjax.org). Below you can see it in action:
+php script to display [Markdown Extra][michelf] files from the web.[^1]
 
-![parsemd in action](http://i.imgur.com/PEqguHj.png)
+Prettifies code with [google prettify][prettify] and uses [parsedown][pd]-[extra][pd-extra] to convert markdown into html. It also parses inline [LaTeX][latex-project] like $\int_0^\infty \frac{f(x)}{g(d)} \mathrm{dx}$ using [mathjax][mathjax] ([LaTeX][latex-project] within code-blocks is left alone). Below you can see it in action:
+
+![parsemd in action][sample]
+
 
 ## Usage
 
 Open `parsemd.php` in your browser.
 The markdown-file is specified with the GET variable `file`, e.g.
 
-    https://www.my-domain.com/parsemd.php?file=README.md&skin=sons-of-obsidian&linenums
+    https://www.my-domain.com/parsemd.php?file=README.md&skin=sons-of-obsidian&linenums&nocpb
 
-The `linenums` argument (at the end of the url) activates linenumbers for code blocks.
-The `skin` argument specifies the code hightlighting skin to use with code-prettify.
+ - The `linenums` argument (at the end of the url) activates linenumbers for code blocks.
+
+ - The `skin` argument specifies the code hightlighting skin to use with code-prettify.
+
+ - `nocpb` disables copy to clipboard and save in codeblocks.
 
 Do not forget to pull the submodules, i.e. clone with `git clone --recursive git@github.com:con-f-use/parsemd.git`.
 
@@ -34,7 +39,7 @@ Here is an example of code, that `parsemd` prettifies automatically:
         <p><?php echo $var; ?></p>
     </body></html>
 
-It honors `<?prettify ?>` commands (see prettify's [Getting Started](https://github.com/google/code-prettify/blob/master/docs/getting_started.md#language-hints)).
+It honors `<?prettify ?>` commands (see prettify's [Getting Started][pretty-started]).
 
 Markdown meta-data can be included at the very top of the markdown file.
 An example would looke like this:
@@ -58,9 +63,10 @@ An example would looke like this:
 
 You can update the script with a simple `git pull` when in the cloning directory. If you're feeling cutting-edge also do a `git submodule update --remote`.
 
+
 ## Requires
 
-This scripts needs [php](https://secure.php.net), a web-browser, a web-server and a working internet connection.
+This scripts needs [php][php], a web-browser, a web-server and a working internet connection.
 
 ### PHP Installation (Ubuntu)
 
@@ -70,8 +76,8 @@ To install a webserver on your local machine (for testing purposes), use:
 
     sudo apt-get install -y lamp-server^
 
-Mind the `^` (caret[^2]) and choose a strong MySQL password, when asked.
-Access your shiny new local webserver from [within your browser](http://localhost).
+Mind the `^` (caret)[^2] and choose a strong MySQL password, when asked.
+Access your shiny new local webserver from [within your browser][localhost].
 If all went well, you should see the "Apache2 Ubuntu Default Page"
 Files on the server are normally only visible to the local network.
 
@@ -92,6 +98,22 @@ php-files you tested on your local webserver can later be uploaded to to a remot
 
 Configure your router to forward port `80` in order for outside users to see your webserver via your IP.[^3]
 
-[^1]: Markdown Extra is a super-set of git-flavored [markdown](https://en.wikipedia.org/wiki/Markdown).
-[^2]: The circonfles `^` effectivly invokes `tasksel` from within `apt-get`. `tasksel` is a sort of meta-package or meta-task application grouping packages together.
-[^3]: Find out your: [web IP](http://www.getip.com/) address `dig +short myip.opendns.com @resolver1.opendns.com` and configure your router for [port-forwarding](http://www.wikihow.com/Set-Up-Port-Forwarding-on-a-Router) if you want your webserver to accessible over the internet, e.g. with `http://138.232.146.60/myfile.php`.
+[^1]: Extra is a super-set of git-flavored [markdown][md].
+
+[^2]: The circonflex `^` effectivly invokes `tasksel` from within `apt-get`. `tasksel` is a sort of meta-package or meta-task application grouping packages together.
+
+[^3]: Find out your: [web IP][getip] address `dig +short myip.opendns.com @resolver1.opendns.com` and configure your router for [port-forwarding][forwarding] if you want your webserver to accessible over the internet, e.g. with `http://138.232.146.60/myfile.php`.
+
+[getip]: http://www.getip.com/
+[prettify]: https://github.com/google/code-prettify
+[pd]: https://github.com/erusev/parsedown
+[pd-extra]: https://github.com/erusev/parsedown-extra
+[pretty-started]: https://github.com/google/code-prettify/blob/master/docs/getting_started.md#language-hints
+[sample]: https://raw.githubusercontent.com/con-f-use/parsemd/master/sample.png
+[latex-project]: https://www.latex-project.org
+[localhost]: http://localhost
+[mathjax]: https://www.mathjax.org
+[michelf]: https://michelf.ca/projects/php-markdown/extra/
+[php]: https://php.net
+[forwarding]: http://www.wikihow.com/Set-Up-Port-Forwarding-on-a-Router
+[md]: https://en.wikipedia.org/wiki/Markdown
