@@ -4,7 +4,9 @@
     date_default_timezone_set("UTC");
 
     $mdfl = urldecode($_GET["file"]);
+    $ln = isset($_GET['linenums']) ? ' linenums=true' : '';
     $nocpb = isset($_GET['nocpb']) === true;
+    $nocfl = isset($_GET['nocfl']) === true;
 
     $metare    = '~^[ ]{0,3}([A-Za-z0-9_-]+):\s*(.*?)$~';
     $metamore  = '~^[ ]{4,}(.*?)$~';
@@ -24,7 +26,8 @@
         $meta['date'] = '';
     }
 
-    if( !file_exists($mdfl) || !is_readable($mdfl)) die("Error reading '$mdfl'.");
+    //ToDo: Improve test below to propperly deal with remote locations, i.e. https://bla.com/foo/bar.md
+    //if( !file_exists($mdfl) || !is_readable($mdfl)) die("Error reading '$mdfl'.");
     $fh = fopen($mdfl, "r");
 
     if(!feof($fh)) {
@@ -67,14 +70,13 @@
     <meta charset="UTF-8">
     <meta class="anchor" name="author"  content="<?php echo $meta['author'];?>">
     <meta class="anchor" name="date"    content="<?php echo $meta['date']; ?>">
-    <?php
-        if(isset($meta['e-mail'])) echo
-            '<meta class="anchor" name="contact" content="'.$meta['e-mail'].'">'
-        ;
-    ?>
+<?php if(isset($meta['e-mail'])) { ?>
+    <meta class="anchor" name="contact" content="<?php echo $meta['e-mail']; ?>">
+<?php } ?>
 
-    <?php if(!$nocpb) { echo
-    '<script src="https://cdn.rawgit.com/zenorocha/clipboard.js/v1.5.8/dist/clipboard.min.js"></script>'."\n"; } ?>
+<?php if(!$nocpb) { ?>
+    <script src="https://cdn.rawgit.com/zenorocha/clipboard.js/v1.5.8/dist/clipboard.min.js"></script>
+<?php } ?>
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
         tex2jax: {
@@ -87,6 +89,7 @@
     <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?skin=<?php echo isset($_GET['skin']) ? $_GET['skin'] : "sunburst"; ?>"></script><!-- sunburst, doxy, desert, sons-of-obsidian -->
 
+<?php if(!$nocfl) { ?>
     <script type="text/javascript">
         // Hack for converting HTML special characters to regular text, i.e. '&nbsp;' --> ' '
         function decodeHtml(html) {
@@ -98,7 +101,10 @@
         // Save the code in a codeblock to a blob for user download.
         function codesave(nbr) {
             data = document.getElementById('code_'+nbr).innerHTML;
-            data = data.replace(/<[^>]*>/g, "");
+            data = data.replace(/<img class="saveimg".*?>/,'');
+            data = data.replace(/<img class="copyclipimg".*?>/,'');
+            data = data.replace(/<\/code><\/li>/g, "</code></li><br>\n"); // To work with code numbering
+            data = data.replace(/<[^>]*>/g, '');
             data = decodeHtml(data);
             data = [data];
             properties = {type: 'plain/text'};
@@ -111,6 +117,7 @@
             window.open(url);
         }
     </script>
+<?php } ?>
 
     <style type="text/css">
 
@@ -215,10 +222,11 @@
         float: right;
     }
 
+<?php if($ln !== '') { ?>
     li.L0, li.L1, li.L2, li.L3, li.L5, li.L6, li.L7, li.L8 {
         list-style-type: decimal !important;
     }
-
+<?php } ?>
     .copyclipimg {
         height: 1.2em;
         -webkit-filter: invert(1);
@@ -226,7 +234,6 @@
         float: right;
         cursor: pointer;
     }
-
     .saveimg {
         height: 1.2em;
         -webkit-filter: invert(1);
@@ -238,7 +245,7 @@
 </style>
 </head><body>
 
-<div class="output"><a href="<?php echo $mdfl; ?>"><img class="saveimg" alt="saveicon" src="http://www.fileformat.info/info/unicode/char/1f4be/floppy_disk.png"></a>
+<div class="output"><a href="<?php echo $mdfl; ?>"><img class="saveimg" alt="Link to this Markdown file" src="http://www.fileformat.info/info/unicode/char/1f4be/floppy_disk.png"></a>
 
 <?php
     require_once "include/parsedown/Parsedown.php";
@@ -246,20 +253,25 @@
     $parsedown = new ParsedownExtra();
 
     $text = $parsedown->text($text);
-    $ln = isset($_GET['linenums']) ? ' linenums=true' : '';
     $id = 0;
     $codestart = '~<pre><code>~';
     while( preg_match($codestart, $text) ) {
-        $cpbstr = '<pre class="prettyprint'.$ln.'">';
+        $cpbstr = '<pre class="prettyprint'.$ln.'" id="code_'.$id.'">';
+        if( !$nocfl ) {
+            $cpbstr .=
+            '<img class="saveimg" '.
+            //'alt="save code to file" '.
+            'onclick="codesave('.$id.');" '.
+            'src="http://www.fileformat.info/info/unicode/char/1f4be/floppy_disk.png">';
+        }
         if( !$nocpb ) {
             $cpbstr .=
-            '<img class="saveimg" alt="saveicon" onclick="codesave('.$id.');" '.
-            'src="http://www.fileformat.info/info/unicode/char/1f4be/floppy_disk.png">'.
-            '<img class="copyclipimg" alt="clipboardicon" '.
+            '<img class="copyclipimg" '.
+            //'alt="copy code to clipboard" '.
             'data-clipboard-target="#code_'.$id.'" '.
             'src="http://www.fileformat.info/info/unicode/char/1f4cb/clipboard.png">';
         }
-        $cpbstr .= '<code id="code_'.$id.'">';
+        $cpbstr .= '<code>';
         $text = preg_replace( $codestart, $cpbstr, $text, 1 );
         ++$id;
     }
@@ -284,16 +296,17 @@
 </div>
 
 </div>
-<?php if(!$nocpb) { echo
-'<script type="text/javascript">'.
-"    var clipboard = new Clipboard('.copyclipimg');".
-"    clipboard.on('success', function(e) {".
-'        console.log(e);'.
-'    });'.
-"    clipboard.on('error', function(e) {".
-'        console.log(e);'.
-'    });'.
-'</script>';
-} ?>
+
+<?php if(!$nocpb) { // Conditionally include clipboard ?>
+<script type="text/javascript">
+    var clipboard = new Clipboard('.copyclipimg');
+    clipboard.on('success', function(e) {
+        console.log(e);
+    });
+    clipboard.on('error', function(e) {
+        console.log(e);
+    });
+</script>'
+<?php } // ToDo: Figure out how to preprocess clipboard text so the "<img alt="-text of copy to clipboard or open as file doesn't appear. ?>
 
 </body></html>

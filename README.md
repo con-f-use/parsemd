@@ -18,7 +18,9 @@ The markdown-file is specified with the GET variable `file`, e.g.
 
  - The `skin` argument specifies the code hightlighting skin to use with code-prettify.
 
- - `nocpb` disables copy to clipboard and save in codeblocks.
+ - `nocpb` disables copy to clipboard icon in code-boxes
+
+ - `nocfl` disables the save as file icon in code-boxes
 
 Do not forget to pull the submodules, i.e. clone with `git clone --recursive git@github.com:con-f-use/parsemd.git`.
 
